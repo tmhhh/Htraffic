@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCMC Live Traffic Monitor</title>
+    <meta name="description" content="Live traffic camera feeds for Ho Chi Minh City">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <div class="pulse-dot"></div>
+                <h1>Giao thông Hoàng</h1>
+            </div>
+        </header>
+
+        <main class="grid-container">
+            <!-- Camera 1 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <div class="camera-title">
+                        <h2>Nguyễn Tất Thành - Cảng SG (Q7-Q4)</h2>
+                        <div class="header-actions">
+                            <span class="live-badge">LIVE</span>
+                            <button class="fullscreen-btn" onclick="toggleFullScreen(this)" title="Full Screen">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-container">
+                    <iframe
+                        src="https://giaothong.hochiminhcity.gov.vn/expandcameraplayer/?camId=63b6617ebfd3d90017eaa50b&camLocation=Nguy%E1%BB%85n%20T%E1%BA%A5t%20Th%C3%A0nh%20-%20C%E1%BA%A3ng%20SG%20(Q7-Q4)&camMode=camera&videoUrl=https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
+                        width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Camera 2 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <div class="camera-title">
+                        <h2>Nguyễn Tất Thành - Cảng SG (Q4-Q7)</h2>
+                        <div class="header-actions">
+                            <span class="live-badge">LIVE</span>
+                            <button class="fullscreen-btn" onclick="toggleFullScreen(this)" title="Full Screen">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-container">
+                    <iframe
+                        src="https://giaothong.hochiminhcity.gov.vn/expandcameraplayer/?camId=63b661a3bfd3d90017eaa520&camLocation=Nguy%E1%BB%85n%20T%E1%BA%A5t%20Th%C3%A0nh%20-%20C%E1%BA%A3ng%20SG%20(Q4-Q7)&camMode=camera&videoUrl=https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
+                        width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Camera 3 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <div class="camera-title">
+                        <h2>Cộng Hòa - Ấp Bắc</h2>
+                        <div class="header-actions">
+                            <span class="live-badge">LIVE</span>
+                            <button class="fullscreen-btn" onclick="toggleFullScreen(this)" title="Full Screen">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-container">
+                    <iframe
+                        src="https://giaothong.hochiminhcity.gov.vn/expandcameraplayer/?camId=662b57471afb9c00172d9095&camLocation=C%E1%BB%99ng%20H%C3%B2a%20-%20%E1%BA%A4p%20B%E1%BA%AFc&camMode=camera&videoUrl=https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
+                        width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleFullScreen(btn) {
+            const card = btn.closest('.camera-card');
+            const container = card.querySelector('.video-container');
+            if (!document.fullscreenElement) {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
