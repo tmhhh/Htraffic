@@ -1,0 +1,228 @@
+//panel.map.originMarkerEdit: Lưu shape gốc khi edit. Ẩn đi khi bắt đầu edit và hiện khi edit bị hủy. Tránh trường hợp dang edit click lên đối tượng gốc sinh ra lỗi
+Ext.define('Public.controller.CameraPlayer', {
+    extend: 'Ext.app.Controller',
+
+    views: ['CameraPlayer'],
+
+    init: function() {
+        this.control
+            ({
+                'cameraplayer':
+                {
+                    afterrender: function(panel) {
+                        var me = this;
+                        if (panel) {
+                            me.windowWidth = $(window).width();
+                            me.windowHeight = $(window).height();
+                            $(window).resize(function() {
+                                setTimeout(function () {
+                                    panel.setConfig('html', null);
+                                    if (panel.player) {
+                                        panel.player.dispose();
+                                    }
+
+                                    panel.setConfig('html', panel.buildHtml(null, panel.config.data, panel.config.data.videoMode));
+                                    if (panel.config.data.videoMode && panel.config.buildVideoStreamRun && typeof panel.config.buildVideoStreamRun === "function") {
+                                        panel.player = panel.config.buildVideoStreamRun(null, panel.config.data.Id);
+                                    }
+                                    //setTimeout(function() {
+                                    //    $('#btn-' + data.Id).click(function () {
+                                    //        fnChangeMode();
+                                    //    });
+                                    //},500);
+
+                                },500);
+                            });
+                        }
+
+                        if (panel.config.data.videoMode && panel.config.buildVideoStreamRun && typeof panel.config.buildVideoStreamRun === "function") {
+                            panel.player = panel.config.buildVideoStreamRun(null, panel.config.data.Id);
+                        }
+                    },
+                    afterlayout: function (panel) {
+                        var fnChangeMode = function () {
+                            if (panel.config.data.videoMode) {
+                                panel.videoMode = false;
+                                panel.config.data.videoMode = false;
+                                if (panel.player) {
+                                    panel.player.dispose();
+                                }
+                                if (panel.config.data && panel.config.data.Id) {
+                                    panel.setConfig('html',
+                                        panel.buildHtml(null, panel.config.data, panel.config.data.videoMode, fnChangeMode));
+
+                                    if (panel.interval) {
+                                        panel.interval = panel.buildInterval(panel.config.data.Id,
+                                            panel.down('#cboInterval')
+                                                ? panel.down('#cboInterval').getValue()
+                                                : 2000);
+                                    }
+                                }
+                            } else {
+                                panel.videoMode = true;
+                                panel.config.data.videoMode = true;
+                                if (panel.interval) {
+                                    clearInterval(panel.interval);
+                                }
+                                if (panel.config.data &&
+                                    panel.config.data.VideoStreaming &&
+                                    panel.config.data.VideoUrl) {
+                                    panel.setConfig('html',
+                                        panel.buildHtml(null, panel.config.data, panel.config.data.videoMode));
+                                    panel.player =
+                                        panel.buildVideoStreamRun(null, panel.config.data.Id);
+                                }
+                            }
+                            setTimeout(function () {
+                                $('#btn-' + panel.config.data.Id).click(function (e) {
+                                    fnChangeMode();
+                                });
+                            }, 500);
+                        };
+                        setTimeout(function () {
+                            $('#btn-' + panel.config.data.Id).click(function (e) {
+                                fnChangeMode();
+                            });
+                        }, 500);
+                    },
+                    close: function(panel) {
+                        if (panel.interval) {
+                            clearInterval(panel.interval);
+                        }
+                        if (panel.player) {
+                            panel.player.dispose();
+                        }
+                    }
+                },
+                'cameraplayer #btnPlay':
+                {
+                    click: function(btn) {
+                        var cameraPlayer = btn.up('cameraplayer');
+
+                        if (btn.isPlay) {
+                            btn.isPlay = false;
+                            btn.setGlyph(_i('play'));
+                            btn.setTooltip('Play');
+                            btn.removeCls('glyph-color-red');
+                            btn.addCls('glyph-color-green');
+                            if (cameraPlayer.interval) {
+                                clearInterval(cameraPlayer.interval);
+                            }
+                            if (cameraPlayer.player) {
+                                cameraPlayer.player.pause();
+                            }
+                        }
+                        else {
+                            btn.isPlay = true;
+                            btn.setGlyph(_i('stop'));
+                            btn.setTooltip('Stop');
+                            btn.removeCls('glyph-color-green');
+                            btn.addCls('glyph-color-red');
+                            if (cameraPlayer.config.data && cameraPlayer.config.data.Id) {
+                                cameraPlayer.interval = cameraPlayer.buildInterval(cameraPlayer.config.data.Id, cameraPlayer.down('#cboInterval') ? cameraPlayer.down('#cboInterval').getValue() : 2000);
+                            }
+                            if (!cameraPlayer.player && cameraPlayer.config.data && cameraPlayer.config.data.VideoStreaming) {
+                                cameraPlayer.player = cameraPlayer.buildVideoStreamRun(null, cameraPlayer.config.data.Id);
+                            } else {
+                                cameraPlayer.player.play();
+                            }
+                        }
+                    }
+                },
+                'cameraplayer #btnChangeMode':
+                {
+                    click: function(btn) {
+                        var cameraPlayer = btn.up('cameraplayer');
+
+                        if (btn.videoMode) {
+                            btn.videoMode = false;
+                            cameraPlayer.videoMode = false;
+                            btn.setGlyph(_i('video-camera'));
+                            btn.setTooltip('Video Mode');
+                            if (cameraPlayer.player) {
+                                cameraPlayer.player.dispose();
+                            }
+                            if (cameraPlayer.config.data && cameraPlayer.config.data.Id) {
+                                cameraPlayer.setConfig('html', cameraPlayer.buildHtml(null, cameraPlayer.config.data, cameraPlayer.config.data.videoMode));
+
+                                if (cameraPlayer.interval) {
+                                    cameraPlayer.interval = cameraPlayer.buildInterval(cameraPlayer.config.data.Id, cameraPlayer.down('#cboInterval') ? cameraPlayer.down('#cboInterval').getValue() : 2000);
+                                }
+                            }
+                        }
+                        else {
+                            btn.videoMode = true;
+                            cameraPlayer.videoMode = true;
+                            btn.setGlyph(_i('camera'));
+                            btn.setTooltip('Camera Mode');
+                            if (cameraPlayer.interval) {
+                                clearInterval(cameraPlayer.interval);
+                            }
+                            if (cameraPlayer.config.data && cameraPlayer.config.data.VideoStreaming && cameraPlayer.config.data.VideoUrl) {
+                                cameraPlayer.setConfig('html', cameraPlayer.buildHtml(null, cameraPlayer.config.data, cameraPlayer.config.data.videoMode));
+                                cameraPlayer.player = cameraPlayer.buildVideoStreamRun(null, cameraPlayer.config.data.Id);
+                            }
+                        }
+                    }
+                },
+                'cameraplayer #btnExpand':
+                {
+                    click: function(btn) {
+                        var cameraPlayer = btn.up('cameraplayer');
+                        window.open(Ext.String.format('expandcameraplayer?camId={0}&camLocation={1}&camMode={2}&videoUrl={3}',
+                            cameraPlayer.config.data.Id,
+                            (cameraPlayer.config.data.DisplayName ? cameraPlayer.config.data.DisplayName : cameraPlayer.config.data.Title),
+                            cameraPlayer.config.data.videoMode ? 'video' : 'camera',
+                            cameraPlayer.config.data.VideoUrl ? cameraPlayer.config.data.VideoUrl : 'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'),
+                            'camera-player-' + cameraPlayer.config.data.Id,
+                            'location=yes,height=253,width=450,scrollbars=yes,status=yes', true);
+                    }
+                },
+                'cameraplayer #btnTracking':
+                {
+                    click: function(btn) {
+                        var cameraPlayer = btn.up('cameraplayer');
+                        if (cameraPlayer.mapPanel) {
+                            var trackingContainer = cameraPlayer.mapPanel.down('#' + cameraPlayer.trackingContainer);
+                            if (!trackingContainer) {
+                                cameraPlayer.mapPanel.fireEvent('appendTrackingTab',
+                                    cameraPlayer.mapPanel,
+                                    cameraPlayer.trackingContainer);
+                                trackingContainer = cameraPlayer.mapPanel.down('#' + cameraPlayer.trackingContainer);
+                            }
+                            trackingContainer.appendItem(trackingContainer, cameraPlayer.config.data, cameraPlayer.config.data.videoMode);
+                        }
+
+                    }
+                },
+                'cameraplayer #cboInterval':
+                {
+                    change: function(cbx, newValue, oldValue) {
+                        if (newValue) {
+                            this.updateInterval(cbx.up('cameraplayer'), newValue);
+
+                        }
+                    }
+                },
+                'cameraplayer #cboExpand':
+                {
+                    change: function(cbx, newValue, oldValue) {
+                        if (newValue) {
+                            var root = cbx.up('cameraplayer');
+                            window.resizeTo(this.windowWidth * newValue, this.windowHeight * newValue);
+                            setTimeout(function() {
+                                root.setConfig('html', null);
+                                root.setConfig('html', root.buildHtml(root.config.data, root.config.data.videoMode));
+                            }, 500);
+                        }
+                    }
+                }
+            });
+    },
+    updateInterval: function(cameraPlayer, newInterval) {
+        if (cameraPlayer.interval && cameraPlayer.buildInterval && typeof cameraPlayer.buildInterval === "function") {
+            clearInterval(cameraPlayer.interval);
+            cameraPlayer.interval = cameraPlayer.buildInterval(cameraPlayer.config.data.Id, newInterval);
+        }
+    }
+});

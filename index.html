@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HCMC Live Traffic Monitor</title>
-    <meta name="description" content="Live traffic camera feeds for Ho Chi Minh City">
+    <title>Giao Thông Hoàng</title>
+    <meta name="description" content="Hệ thống giám sát camera giao thông trực tiếp theo quận huyện TP. Hồ Chí Minh">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Hls.js for playing .m3u8 live video streams -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 
 <body>
@@ -16,132 +18,124 @@
         <header>
             <div class="logo">
                 <div class="pulse-dot"></div>
-                <h1>Giao thông Hoàng</h1>
+                <h1>Giao Thông Hoàng</h1>
+            </div>
+
+            <!-- Controls bar: Search & District Filter -->
+            <div class="controls-bar">
+                <div class="search-box">
+                    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="Tìm kiếm theo tên đường, nút giao..."
+                        autocomplete="off">
+                    <button id="clear-search" class="clear-btn" style="display: none;">✕</button>
+                </div>
+
+                <div class="filter-box">
+                    <!-- <button type="button" id="btn-favorites" class="shortcut-btn active" title="Xem camera yêu thích">
+                        <span class="star-icon">⭐</span>
+                        <span>Camera yêu thích (5)</span>
+                    </button> -->
+                    <label for="district-select">Khu vực:</label>
+                    <select id="district-select">
+                        <option value="FAVORITES" selected>⭐ Camera yêu thích (5 camera)</option>
+                        <option value="ALL">Tất cả quận huyện (701 camera)</option>
+                    </select>
+                </div>
+
+                <div class="auto-refresh-toggle">
+                    <label class="switch">
+                        <input type="checkbox" id="auto-refresh" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">Tự làm mới (5s)</span>
+                </div>
+            </div>
+
+            <!-- Stats & Quick tags -->
+            <div class="stats-bar">
+                <span id="camera-count-badge" class="count-badge">Đang tải camera...</span>
             </div>
         </header>
 
-        <main class="grid-container">
-            <!-- Camera 1 -->
-            <div class="camera-card">
-                <div class="camera-header">
-                    <div class="camera-title">
-                        <h2>Nguyễn Tất Thành - Cảng SG (Q7-Q4)</h2>
-                        <div class="header-actions">
-                            <span class="live-badge">LIVE</span>
-                            <button class="fullscreen-btn" onclick="toggleFullScreen(this)" title="Full Screen">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path
-                                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="video-container">
-                    <iframe
-                        src="https://giaothong.hochiminhcity.gov.vn/expandcameraplayer/?camId=63b6617ebfd3d90017eaa50b&camLocation=Nguy%E1%BB%85n%20T%E1%BA%A5t%20Th%C3%A0nh%20-%20C%E1%BA%A3ng%20SG%20(Q7-Q4)&camMode=camera&videoUrl=https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
-                        width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <!-- Camera 2 -->
-            <div class="camera-card">
-                <div class="camera-header">
-                    <div class="camera-title">
-                        <h2>Nguyễn Tất Thành - Cảng SG (Q4-Q7)</h2>
-                        <div class="header-actions">
-                            <span class="live-badge">LIVE</span>
-                            <button class="fullscreen-btn" onclick="toggleFullScreen(this)" title="Full Screen">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path
-                                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="video-container">
-                    <iframe
-                        src="https://giaothong.hochiminhcity.gov.vn/expandcameraplayer/?camId=63b661a3bfd3d90017eaa520&camLocation=Nguy%E1%BB%85n%20T%E1%BA%A5t%20Th%C3%A0nh%20-%20C%E1%BA%A3ng%20SG%20(Q4-Q7)&camMode=camera&videoUrl=https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
-                        width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <!-- Camera 3 -->
-            <div class="camera-card">
-                <div class="camera-header">
-                    <div class="camera-title">
-                        <h2>Cộng Hòa - Ấp Bắc</h2>
-                        <div class="header-actions">
-                            <span class="live-badge">LIVE</span>
-                            <button class="fullscreen-btn" onclick="toggleFullScreen(this)" title="Full Screen">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path
-                                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="video-container">
-                    <iframe
-                        src="https://giaothong.hochiminhcity.gov.vn/expandcameraplayer/?camId=662b57471afb9c00172d9095&camLocation=C%E1%BB%99ng%20H%C3%B2a%20-%20%E1%BA%A4p%20B%E1%BA%AFc&camMode=camera&videoUrl=https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
-                        width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <!-- Camera 4 -->
-            <div class="camera-card">
-                <div class="camera-header">
-                    <div class="camera-title">
-                        <h2>Nút giao Hàng Xanh 5 (Hàng Xanh - Bạch Đằng)</h2>
-                        <div class="header-actions">
-                            <span class="live-badge">LIVE</span>
-                            <button class="fullscreen-btn" onclick="toggleFullScreen(this)" title="Full Screen">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path
-                                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="video-container">
-                    <iframe
-                        src="https://giaothong.hochiminhcity.gov.vn/expandcameraplayer/?camId=5d9ddec9766c880017188c9c&camLocation=N%C3%BAt%20giao%20H%C3%A0ng%20Xanh%205%20(H%C3%A0ng%20Xanh%20-%20B%E1%BA%A1ch%20%C4%90%E1%BA%B1ng)&camMode=camera&videoUrl=https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
-                        width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-                </div>
+        <!-- Main grouped container -->
+        <main id="camera-grid-container">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Đang tải dữ liệu camera giao thông...</p>
             </div>
         </main>
     </div>
 
-    <script>
-        function toggleFullScreen(btn) {
-            const card = btn.closest('.camera-card');
-            const container = card.querySelector('.video-container');
-            if (!document.fullscreenElement) {
-                if (container.requestFullscreen) {
-                    container.requestFullscreen();
-                } else if (container.webkitRequestFullscreen) {
-                    container.webkitRequestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
-            }
-        }
-    </script>
+    <!-- Fullscreen Modal for High-Res View & Live Video Stream -->
+    <div id="camera-modal" class="modal">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-info">
+                    <span class="modal-district" id="modal-district">Quận</span>
+                    <h3 id="modal-title">Tên Camera</h3>
+                </div>
+                <div class="modal-actions">
+                    <!-- Mode toggle buttons: Snapshot vs Live Video -->
+                    <div class="modal-mode-switch" id="modal-mode-switch">
+                        <button id="btn-mode-image" class="mode-btn active" onclick="switchModalMode('image')">📷 Hình
+                            ảnh</button>
+                        <button id="btn-mode-video" class="mode-btn" onclick="switchModalMode('video')">🎥 Video trực
+                            tiếp</button>
+                    </div>
+
+                    <a id="modal-stream-link" href="#" target="_blank" class="modal-link-btn stream-link-btn"
+                        title="Mở link stream .m3u8 trực tiếp">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Mở Stream
+                    </a>
+                    <a id="modal-open-link" href="#" target="_blank" class="modal-link-btn" title="Mở trang gốc">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        Trang gốc
+                    </a>
+                    <button class="modal-close-btn" onclick="closeModal()">✕</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <img id="modal-image" src="" alt="Camera Snapshot" />
+                <video id="modal-video" class="modal-video" controls autoplay playsinline
+                    style="display: none;"></video>
+                <div id="video-loading" class="video-loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p id="video-loading-text">Đang kết nối luồng video trực tiếp...</p>
+                </div>
+                <div id="video-error" class="video-error" style="display: none;">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <p id="video-error-msg">Không thể tải luồng video trực tiếp từ máy chủ camera.</p>
+                    <div class="error-actions">
+                        <a id="video-direct-link" href="#" target="_blank" class="modal-link-btn">Mở luồng video trực
+                            tiếp</a>
+                        <button class="mode-btn back-btn" onclick="switchModalMode('image')">📷 Chuyển về ảnh chụp trực
+                            tiếp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 
 </html>
